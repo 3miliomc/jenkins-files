@@ -1,0 +1,18 @@
+// Reference the GitLab connection name from your Jenkins Global configuration (http://JENKINS_URL/configure, GitLab section)
+properties([[$class: 'GitLabConnectionProperty', gitLabConnection: 'gitlab_redtogreen']])
+
+node("java8")
+{
+    stage "checkout"
+    checkout scm
+
+    stage "build"
+    gitlabCommitStatus("build") {
+        // your build steps
+    }
+
+    stage "test"
+    gitlabCommitStatus("test") {
+        // your test steps
+    }
+}
