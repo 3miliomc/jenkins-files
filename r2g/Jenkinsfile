@@ -2,7 +2,7 @@
 
 node('java8')
 {
-    stage "checkout"
+    stage("checkout")
 	{
 		checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'http://10.151.51.21/rpa-base/rpa-base-mpa.git']]])
 	}
