@@ -1,10 +1,9 @@
 // Reference the GitLab connection name from your Jenkins Global configuration (http://JENKINS_URL/configure, GitLab section)
-properties([[$class: 'GitLabConnectionProperty', gitLabConnection: 'gitlab_redtogreen']])
-checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'http://10.151.51.21/rpa-base/rpa-base-mpa.git']]])
 
 node('java8')
 {
     stage "checkout"
-    checkout scm
-
+	{
+		checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'http://10.151.51.21/rpa-base/rpa-base-mpa.git']]])
+	}
 }
