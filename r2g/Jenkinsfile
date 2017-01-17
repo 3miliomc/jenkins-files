@@ -7,13 +7,4 @@ node('java8')
     stage "checkout"
     checkout scm
 
-    stage "build"
-    gitlabCommitStatus("build") {
-        // your build steps
-    }
-
-    stage "test"
-    gitlabCommitStatus("test") {
-        // your test steps
-    }
 }
