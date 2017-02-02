@@ -4,7 +4,7 @@ node("nodo-java8"){
  try {
     notifyBuild('STARTED')
     stage("Pull"){
-        git "git@10.151.51.21:rpa-base/rpa-base-ms-context.git"
+        git "'${GitSshUrl}'"
       // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'http://10.151.51.21/rpa-base/rpa-base-mpa.git']]])
     }
     stage("Build"){
