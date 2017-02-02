@@ -83,7 +83,7 @@ def notifyBuild(String buildStatus = 'STARTED') {
   }
 
   // Send notifications
-  slackSend channel: '#${TAG_LEVEL}', color: colorCode, message: summary, teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
+  slackSend channel: '#$TAG_LEVEL', color: colorCode, message: summary, teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
 }
 
 def sendEmail(){
