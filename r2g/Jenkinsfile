@@ -4,8 +4,7 @@ node("nodo-java8"){
  try {
     notifyBuild('STARTED')
     stage("Pull"){
-       // git "git@10.151.51.21:rpa-base/rpa-base-ms-context.git"
-	   checkout "gitlab"
+        git "${GIT_URL_SSH}"
       // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'http://10.151.51.21/rpa-base/rpa-base-mpa.git']]])
     }
     stage("Build"){
@@ -84,9 +83,9 @@ def notifyBuild(String buildStatus = 'STARTED') {
   }
 
   // Send notifications
-  slackSend channel: '#rpa-base', color: colorCode, message: summary, teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
+  slackSend channel: '#$TAG_LEVEL', color: colorCode, message: summary, teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
 }
 
 def sendEmail(){
-    emailext body: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS: <br/>  URL build: $BUILD_URL <br/> Slack Channel: https://r2g-labs.slack.com/messages/rpa-base', mimeType: 'text/html', subject: 'JENKINS: $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'mdlucca@redtogreen.com, emontes@redtogreen.com, jaraya@redtogreen.com, rbarraza@redtogreen.com, esanchez@redtogreen.com, srios@redtogreen.com'
+    emailext body: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS: <br/>  URL build: $BUILD_URL <br/> Slack Channel: https://r2g-labs.slack.com/messages/$TAG_LEVEL', mimeType: 'text/html', subject: 'JENKINS: $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'mdlucca@redtogreen.com, emontes@redtogreen.com, jaraya@redtogreen.com, rbarraza@redtogreen.com, esanchez@redtogreen.com, srios@redtogreen.com'
 }
