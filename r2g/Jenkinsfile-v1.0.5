@@ -1,0 +1,90 @@
+
+node("${NODE_EXEC}"){
+    def errorMessage = ""
+ try {
+    notifyBuild('STARTED')
+    stage("Pull"){
+        git "${GIT_URL_SSH}"
+     // checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'http://10.151.51.21/rpa-base/rpa-base-mpa.git']]])
+    }
+    stage("Build"){
+      //  sh "mvn clean install"
+      sh "mvn --batch-mode -V -U -e clean compile"
+     
+		
+    }
+    stage("Unit Test"){
+        // Any maven phase that that triggers the test phase can be used here.
+        sh (script: 'mvn -Dmaven.test.failure.ignore test', returnStatus: true)
+        
+        if (currentBuild.result == null) {
+            sh "echo Este proyecto tiene pruebas unitarias por lo tanto quedará UNSTABLE"
+            currentBuild.result = "UNSTABLE"
+        }
+        else{
+            sh "echo Este proyecto si tiene pruebas unitarias"
+            junit '**/target/surefire-reports/TEST-*.xml'
+
+        }
+       
+    }
+    stage('Static Code Analysis') {
+
+        withSonarQubeEnv('sonarqube-6.2') {
+          // requires SonarQube Scanner for Maven 3.2+
+          sh 'mvn -V org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
+        }
+      }
+      stage("Deploy Nexus"){
+          sh "mvn -DskipTests deploy"
+          archive '**/target/*.${TYPE_PACKAGING}'
+      }
+      
+      
+ }
+ catch (err) 
+ {
+    //slackSend channel: '#rpa', failOnError: true, color: 'danger', message: "Error Message: '${err}' \n\n Project: ${env.JOB_NAME} \n\n Build Number: ${env.BUILD_NUMBER} - ${env.$BUILD_STATUS} \n\n  Check console output at ${env.BUILD_URL} to view the results.", teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
+    currentBuild.result = "FAILED"
+    throw err
+ } 
+ finally 
+ {
+    notifyBuild(currentBuild.result)
+ }
+}
+
+def notifyBuild(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+
+  // Default values
+  def colorName = 'GREEN'
+  def colorCode = 'good'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} Check console output at (${env.BUILD_URL}) to view the results."
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    //color = 'ICE'
+    colorCode = '#439FE0'
+  } else if (buildStatus == 'SUCCESSFUL') {
+    //color = 'GREEN'
+    colorCode = 'good'
+  } else if (buildStatus == 'UNSTABLE') {
+    //color = 'YELLOW'
+    colorCode = 'warning'
+    sendEmail()
+  } else {
+    //color = 'RED'
+    colorCode = 'danger'
+    sendEmail()
+  }
+
+  // Send notifications
+  slackSend channel: '#${TAG_PARENT}', color: colorCode, message: summary, teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
+}
+
+def sendEmail(){
+    emailext body: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS: <br/>  URL build: $BUILD_URL <br/> Slack Channel: https://r2g-labs.slack.com/messages/$TAG_PARENT', mimeType: 'text/html', subject: 'JENKINS: $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'mdlucca@redtogreen.com, emontes@redtogreen.com, jaraya@redtogreen.com, rbarraza@redtogreen.com, esanchez@redtogreen.com, srios@redtogreen.com'
+}
