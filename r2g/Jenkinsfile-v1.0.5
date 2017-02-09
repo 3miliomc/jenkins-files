@@ -86,4 +86,4 @@ def notifyBuild(String buildStatus = 'STARTED') {
 }
 
 def sendEmail(){
-    emailext body: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS: <br/>  URL build: $BUILD_URL <br/> Slack Channel: https://r2g-labs.slack.com/messages/$TAG_PARENT', mimeType: 'text/html', subject: 'JENKINS: $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', recipientProviders: [[$class: 'DevelopersRecipientProvider']}
+    emailext body: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS: <br/>  URL build: $BUILD_URL <br/> Slack Channel: https://r2g-labs.slack.com/messages/$TAG_PARENT', mimeType: 'text/html', subject: 'JENKINS: $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'mdlucca@redtogreen.com, emontes@redtogreen.com, jaraya@redtogreen.com, rbarraza@redtogreen.com, esanchez@redtogreen.com, jperez@redtogreen.com'}
