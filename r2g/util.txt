@@ -1,0 +1,10 @@
+
+
+NODE_EXEC nodo-java8
+GIT_URL_SSH xxx
+TYPE_PACKAGING xxx
+TAG_PARENT rpa-base
+
+https://github.com/3miliomc/jenkins-files.git
+
+r2g/Jenkinsfile-v1.0.5
