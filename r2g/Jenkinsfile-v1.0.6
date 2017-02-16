@@ -1,7 +1,8 @@
 
 node("${NODE_EXEC}"){
-    def errorMessage = ""
+    
  try {
+	def errorMessage = ""
     notifyBuild('STARTED')
     stage("Pull"){
         git "${GIT_URL_SSH}"
@@ -52,6 +53,24 @@ node("${NODE_EXEC}"){
  {
     notifyBuild(currentBuild.result)
  }
+}
+
+node("${NODE_DEPLOY}"){
+	try {
+		stage("Deploy Testing"){
+			sh 'echo hola'
+		)
+	}
+	catch (err) 
+	{
+		//slackSend channel: '#rpa', failOnError: true, color: 'danger', message: "Error Message: '${err}' \n\n Project: ${env.JOB_NAME} \n\n Build Number: ${env.BUILD_NUMBER} - ${env.$BUILD_STATUS} \n\n  Check console output at ${env.BUILD_URL} to view the results.", teamDomain: 'r2g-labs', token: 'GhdJrOpvbb47HONTtZukncWA'
+		currentBuild.result = "FAILED"
+		throw err
+	} 
+	finally 
+	{
+		notifyBuild(currentBuild.result)
+	}
 }
 
 def notifyBuild(String buildStatus = 'STARTED') {

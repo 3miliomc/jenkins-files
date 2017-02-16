@@ -13,21 +13,23 @@ node("${NODE_EXEC}"){
      
 		
     }
-    stage("Unit Test"){
-        // Any maven phase that that triggers the test phase can be used here.
-        sh (script: 'mvn -Dmaven.test.failure.ignore test', returnStatus: true)
-        
-        if (currentBuild.result == null) {
-            sh "echo Este proyecto tiene pruebas unitarias por lo tanto quedará UNSTABLE"
-            currentBuild.result = "UNSTABLE"
-        }
-        else{
-            sh "echo Este proyecto si tiene pruebas unitarias"
-            junit '**/target/surefire-reports/TEST-*.xml'
+	if (${UNIT_TEST} != null && ${UNIT_TEST}) {
+		stage("Unit Test"){
+			// Any maven phase that that triggers the test phase can be used here.
+			sh "mvn -Dmaven.test.failure.ignore test"
+			
+			if (currentBuild.result == null) {
+				sh "echo Este proyecto tiene pruebas unitarias por lo tanto quedará UNSTABLE"
+				currentBuild.result = "UNSTABLE"
+			}
+			else{
+				sh "echo Este proyecto si tiene pruebas unitarias"
+				junit '**/target/surefire-reports/TEST-*.xml'
 
-        }
-       
-    }
+			}
+		   
+		}
+	}
     stage('Static Code Analysis') {
 
         withSonarQubeEnv('sonarqube-6.2') {
