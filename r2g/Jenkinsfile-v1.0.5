@@ -15,7 +15,7 @@ node("${NODE_EXEC}"){
     }
 	
 	stage("Unit Test"){
-		if (${UNIT_TEST} != null && ${UNIT_TEST}) {
+		if ("${UNIT_TEST}".toBoolean() != null && "${UNIT_TEST}".toBoolean()) {
 			// Any maven phase that that triggers the test phase can be used here.
 			sh "mvn -Dmaven.test.failure.ignore test"
 			
